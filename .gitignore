@@ -1,0 +1,24 @@
+# Compiled binary
+bin/zeroclaw
+
+# Configuration files with secrets
+config/*.toml
+!config/*.toml.template
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.bak
