@@ -178,9 +178,18 @@ This will remove the service, binary, and optionally the zeroclaw user and confi
 
 ### Service fails to start
 
+The systemd unit must run `zeroclaw daemon` (not bare `zeroclaw`). Without the `daemon` subcommand the process exits immediately and systemd reports a failed service.
+
 Check the logs:
 ```bash
 sudo journalctl -u zeroclaw -n 50
+```
+
+After updating the unit file:
+```bash
+sudo cp systemd/zeroclaw.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl restart zeroclaw
 ```
 
 ### Permission denied errors

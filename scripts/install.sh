@@ -155,7 +155,8 @@ Type=simple
 User=$ZEROCLAW_USER
 Group=$ZEROCLAW_USER
 WorkingDirectory=$ZEROCLAW_HOME
-ExecStart=$BINARY_DEST
+Environment=HOME=$ZEROCLAW_HOME
+ExecStart=$BINARY_DEST daemon
 Restart=on-failure
 RestartSec=10
 StandardOutput=journal

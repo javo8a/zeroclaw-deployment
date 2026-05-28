@@ -9,9 +9,10 @@ Type=simple
 User=zeroclaw
 Group=zeroclaw
 WorkingDirectory=/home/zeroclaw
+Environment=HOME=/home/zeroclaw
 
-# Start the zeroclaw binary
-ExecStart=/usr/local/bin/zeroclaw
+# Long-running runtime (gateway, channels, scheduler)
+ExecStart=/usr/local/bin/zeroclaw daemon
 
 # Restart policy
 Restart=on-failure
