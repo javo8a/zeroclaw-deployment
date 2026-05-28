@@ -118,33 +118,23 @@ setup_config() {
         if [[ -f "$REPO_DIR/config/config.toml.template" ]]; then
             cp "$REPO_DIR/config/config.toml.template" "$ZEROCLAW_CONFIG_DIR/config.toml"
             log_success "Configuration template installed"
-            log_warning "Please edit $ZEROCLAW_CONFIG_DIR/config.toml to add your API keys"
+            log_warning "Run onboarding to add providers and agents:"
+            log_warning "  sudo -u $ZEROCLAW_USER zeroclaw onboard"
         else
-            # Create minimal config
+            # Create minimal v3 config (zeroclaw 0.8.0+)
             cat > "$ZEROCLAW_CONFIG_DIR/config.toml" << 'EOF'
-# ZeroClaw Configuration
-# Edit this file to add your API keys and configure channels
+schema_version = 3
 
-# Default AI provider (anthropic, openai, etc.)
-default_provider = "anthropic"
-
-# API key for the default provider
-# api_key = "sk-ant-your-key-here"
-
-# Optional: Configure specific channels
-# [channels.telegram]
-# enabled = false
-# bot_token = "your-telegram-bot-token"
-
-# [channels.discord]
-# enabled = false
-# bot_token = "your-discord-bot-token"
+[gateway]
+web_dist_dir = "/usr/share/zeroclaw/web/dist"
 EOF
             log_success "Minimal configuration file created"
-            log_warning "Please edit $ZEROCLAW_CONFIG_DIR/config.toml to add your API keys"
+            log_warning "Run onboarding to add providers and agents:"
+            log_warning "  sudo -u $ZEROCLAW_USER zeroclaw onboard"
         fi
     else
         log_info "Configuration file already exists, skipping template copy"
+        log_info "If you upgraded to 0.8.0+, run: sudo -u $ZEROCLAW_USER zeroclaw config migrate"
     fi
 
     # Set proper permissions
@@ -213,7 +203,8 @@ main() {
     log_success "Installation complete!"
     echo
     log_info "Next steps:"
-    log_info "  1. Edit the configuration: sudo nano $ZEROCLAW_CONFIG_DIR/config.toml"
+    log_info "  1. Configure zeroclaw: sudo -u $ZEROCLAW_USER zeroclaw onboard"
+    log_info "     (or edit $ZEROCLAW_CONFIG_DIR/config.toml for schema v3)"
     log_info "  2. Start the service: sudo systemctl start zeroclaw"
     log_info "  3. Enable auto-start: sudo systemctl enable zeroclaw"
     log_info "  4. Check status: sudo systemctl status zeroclaw"

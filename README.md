@@ -68,17 +68,20 @@ This will:
 
 ### 3. Configure ZeroClaw
 
-Edit the configuration file:
+Run the onboarding wizard (recommended for 0.8.0+):
 
 ```bash
-sudo nano /home/zeroclaw/.zeroclaw/config.toml
+sudo -u zeroclaw zeroclaw onboard
 ```
 
-Add your API key and provider settings:
+Or edit the config manually. Zeroclaw 0.8.0 uses **schema v3** — providers live under `[providers.models.<type>.<alias>]`, agents under `[agents.<alias>]`, and risk profiles under `[risk_profiles.<alias>]`. See `config/config.toml.template` for a minimal example.
 
-```toml
-default_provider = "anthropic"
-api_key = "sk-ant-your-key-here"
+If you upgraded from a pre-0.8.0 config and the web dashboard shows paths that "differ from on-disk", commit the migration:
+
+```bash
+sudo systemctl stop zeroclaw
+sudo -u zeroclaw zeroclaw config migrate
+sudo systemctl start zeroclaw
 ```
 
 ### 4. Start the Service
@@ -156,8 +159,11 @@ To update to a new version:
 # Stop the service
 sudo systemctl stop zeroclaw
 
-# Replace the binary
-sudo install -m 755 bin/zeroclaw /usr/local/bin/zeroclaw
+# Replace the binary (and web dashboard if needed)
+sudo ./scripts/install.sh
+
+# If upgrading to 0.8.0+, migrate config on disk
+sudo -u zeroclaw zeroclaw config migrate
 
 # Start the service
 sudo systemctl start zeroclaw
@@ -180,6 +186,20 @@ This will remove the service, binary, and optionally the zeroclaw user and confi
 - API keys and sensitive data are stored in the user's home directory
 
 ## Troubleshooting
+
+### "N paths differ from on-disk" in the web dashboard
+
+This appears when the running daemon loaded a **migrated or edited in-memory config** that does not match `config.toml` on disk. Common after upgrading to 0.8.0 from an older template (`default_provider`, root-level `api_key`, etc.).
+
+Fix:
+
+```bash
+sudo systemctl stop zeroclaw
+sudo -u zeroclaw zeroclaw config migrate
+sudo systemctl start zeroclaw
+```
+
+Then complete setup with `sudo -u zeroclaw zeroclaw onboard` if providers/agents are not configured yet. Do **not** click "Reload daemon" alone — that re-reads the stale on-disk file and keeps the drift.
 
 ### Service fails to start
 

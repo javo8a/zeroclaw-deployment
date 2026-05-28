@@ -186,7 +186,7 @@ main() {
     echo
     log_info "Next steps:"
     log_info "  1. Run the installation script: sudo ./scripts/install.sh"
-    log_info "  2. Configure zeroclaw: sudo nano /home/zeroclaw/.zeroclaw/config.toml"
+    log_info "  2. Configure zeroclaw: sudo -u zeroclaw zeroclaw onboard"
     log_info "  3. Start the service: sudo systemctl start zeroclaw"
     echo
 }

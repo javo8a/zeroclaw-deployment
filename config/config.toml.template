@@ -1,119 +1,35 @@
-# ZeroClaw Configuration Template
-# Copy this file to ~/.zeroclaw/config.toml and edit as needed
+# ZeroClaw Configuration Template (schema v3 — zeroclaw 0.8.0+)
+# Copy to ~/.zeroclaw/config.toml or let install.sh place it there.
+#
+# Recommended: run onboarding instead of hand-editing this file:
+#   sudo -u zeroclaw zeroclaw onboard
+#
+# Pre-0.8.0 keys (default_provider, api_key at the root, flat [channels.*])
+# are no longer valid. If you upgraded from an older install, commit the
+# in-memory migration to disk:
+#   sudo -u zeroclaw zeroclaw config migrate
 
-# ============================================================================
-# AI Provider Configuration
-# ============================================================================
-
-# Default AI provider to use (anthropic, openai, etc.)
-default_provider = "anthropic"
-
-# API key for the default provider
-# For Anthropic: Get your key from https://console.anthropic.com/
-# api_key = "sk-ant-your-key-here"
-
-# Optional: Model to use (defaults to provider's recommended model)
-# model = "claude-sonnet-4-5"
-
-# ============================================================================
-# Messaging Channel Configuration
-# ============================================================================
-# Uncomment and configure the channels you want to use
-
-# Telegram Bot
-# [channels.telegram]
-# enabled = false
-# bot_token = "your-telegram-bot-token"
-# # Get bot token from @BotFather on Telegram
-
-# Discord Bot
-# [channels.discord]
-# enabled = false
-# bot_token = "your-discord-bot-token"
-# # Create bot at https://discord.com/developers/applications
-
-# Slack Bot
-# [channels.slack]
-# enabled = false
-# bot_token = "xoxb-your-slack-bot-token"
-# app_token = "xapp-your-slack-app-token"
-# # Create app at https://api.slack.com/apps
-
-# WhatsApp (requires additional setup)
-# [channels.whatsapp]
-# enabled = false
-# phone_number = "+1234567890"
-
-# Signal (requires signal-cli)
-# [channels.signal]
-# enabled = false
-# phone_number = "+1234567890"
-
-# Matrix
-# [channels.matrix]
-# enabled = false
-# homeserver = "https://matrix.org"
-# user_id = "@bot:matrix.org"
-# access_token = "your-matrix-access-token"
-
-# ============================================================================
-# Gateway / Web Console (default port 42617)
-# ============================================================================
-# By default the gateway binds to 127.0.0.1 — only reachable on this machine.
-# To open the web console to other hosts on your LAN (or via port forward):
+schema_version = 3
 
 [gateway]
 web_dist_dir = "/usr/share/zeroclaw/web/dist"
-# host = "0.0.0.0"
+# host = "0.0.0.0"          # default is 127.0.0.1 (local only)
 # port = 42617
 # allow_public_bind = true   # required when host is 0.0.0.0 or [::]
 #
-# Pairing is enabled by default (require_pairing = true). From another device,
-# open http://<server-ip>:42617 and complete pairing, or run on the server:
-#   zeroclaw gateway paircode
+# Pairing is enabled by default. From another device, open http://<server-ip>:42617
+# and complete pairing, or run on the server:
+#   sudo -u zeroclaw zeroclaw gateway paircode
+
+# --- Minimal provider + agent example (uncomment and edit, or use onboard) ---
 #
-# For internet access without opening ports, use a tunnel instead:
-# [tunnel]
-# provider = "tailscale"   # or "cloudflare", "ngrok"
-
-# ============================================================================
-# Hardware Integration (Optional)
-# ============================================================================
-
-# ESP32 / Arduino / Raspberry Pi GPIO
-# [hardware]
-# enabled = false
-# devices = [
-#     { name = "sensor1", type = "esp32", address = "192.168.1.100" },
-#     { name = "light1", type = "arduino", port = "/dev/ttyUSB0" }
-# ]
-
-# ============================================================================
-# Agent Configuration
-# ============================================================================
-
-# [agent]
-# # Enable autonomous operation
-# autonomous = false
-# # Scheduling interval for periodic tasks
-# schedule_interval = "1h"
-# # Maximum concurrent tasks
-# max_concurrent_tasks = 3
-
-# ============================================================================
-# Logging Configuration
-# ============================================================================
-
-# [logging]
-# level = "info"  # Options: trace, debug, info, warn, error
-# file = "/home/zeroclaw/.zeroclaw/zeroclaw.log"
-
-# ============================================================================
-# Security Settings
-# ============================================================================
-
-# [security]
-# # List of allowed user IDs (for Telegram, Discord, etc.)
-# allowed_users = []
-# # Enable end-to-end encryption where supported
-# e2e_encryption = true
+# [providers.models.anthropic.home]
+# model = "claude-sonnet-4-6"
+# api_key = "sk-ant-..."
+#
+# [agents.assistant]
+# model_provider = "anthropic.home"
+# risk_profile   = "assistant"
+#
+# [risk_profiles.assistant]
+# level = "supervised"
