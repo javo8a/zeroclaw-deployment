@@ -1,6 +1,9 @@
 # Compiled binary
 bin/zeroclaw
 
+# Built web dashboard (produced by scripts/build-zeroclaw.sh)
+web/dist/
+
 # Configuration files with secrets
 config/*.toml
 !config/*.toml.template

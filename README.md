@@ -32,19 +32,24 @@ ZeroClaw is a lightweight, Rust-based personal AI assistant infrastructure that 
 
 ### 1. Build ZeroClaw for x86_64
 
-On a Fedora x86_64 system with Rust installed:
+On a Fedora x86_64 system with Rust and Node.js installed:
 
 ```bash
-# Install Rust if not already installed
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+# Recommended: builds the binary and web dashboard together
+./scripts/build-zeroclaw.sh
+```
 
-# Clone and build zeroclaw
+This runs `cargo web build` (Vite dashboard → `web/dist/`) and `cargo build --release`, then copies artifacts into `bin/zeroclaw` and `web/dist/`.
+
+Manual build (if you prefer):
+
+```bash
 git clone https://github.com/zeroclaw-labs/zeroclaw.git
 cd zeroclaw
+cargo web build
 cargo build --release --locked
-
-# Copy the binary to this repo
 cp target/release/zeroclaw /path/to/this/repo/bin/
+cp -a web/dist /path/to/this/repo/web/
 ```
 
 ### 2. Run the Installation Script
@@ -56,7 +61,7 @@ sudo ./scripts/install.sh
 
 This will:
 - Create a dedicated `zeroclaw` user
-- Install the zeroclaw binary to `/usr/local/bin`
+- Install the zeroclaw binary to `/usr/local/bin` and the web dashboard to `/usr/share/zeroclaw/web/dist`
 - Set up configuration directory at `/home/zeroclaw/.zeroclaw`
 - Configure proper permissions
 - Install and enable systemd service
@@ -215,6 +220,33 @@ sudo firewall-cmd --reload
 Open `http://<server-ip>:42617` from another device. Pairing is required by default — run `sudo -u zeroclaw zeroclaw gateway paircode` on the server if prompted.
 
 For access over the public internet, prefer a reverse proxy with TLS or a `[tunnel]` provider rather than exposing `42617` directly.
+
+### "Web dashboard not available" at :42617
+
+The Rust binary does not include the UI by default. Build the frontend and install it:
+
+```bash
+./scripts/build-zeroclaw.sh
+sudo ./scripts/install.sh
+```
+
+Or on an existing zeroclaw checkout:
+
+```bash
+cd zeroclaw
+cargo web build
+sudo install -d -m 755 /usr/share/zeroclaw/web/dist
+sudo cp -a web/dist/. /usr/share/zeroclaw/web/dist/
+```
+
+Add to `/home/zeroclaw/.zeroclaw/config.toml`:
+
+```toml
+[gateway]
+web_dist_dir = "/usr/share/zeroclaw/web/dist"
+```
+
+Restart: `sudo systemctl restart zeroclaw`. The API at `:42617` works without the dashboard; only the HTML UI needs `web/dist`.
 
 ### Permission denied errors
 

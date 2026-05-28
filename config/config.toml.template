@@ -62,7 +62,8 @@ default_provider = "anthropic"
 # By default the gateway binds to 127.0.0.1 — only reachable on this machine.
 # To open the web console to other hosts on your LAN (or via port forward):
 
-# [gateway]
+[gateway]
+web_dist_dir = "/usr/share/zeroclaw/web/dist"
 # host = "0.0.0.0"
 # port = 42617
 # allow_public_bind = true   # required when host is 0.0.0.0 or [::]

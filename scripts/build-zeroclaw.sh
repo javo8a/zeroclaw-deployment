@@ -55,9 +55,9 @@ install_dependencies() {
     log_info "Installing build dependencies..."
 
     if command -v dnf &> /dev/null; then
-        sudo dnf install -y gcc pkg-config openssl-devel git
+        sudo dnf install -y gcc pkg-config openssl-devel git nodejs npm
     elif command -v yum &> /dev/null; then
-        sudo yum install -y gcc pkg-config openssl-devel git
+        sudo yum install -y gcc pkg-config openssl-devel git nodejs npm
     else
         log_error "Could not find dnf or yum package manager"
         exit 1
@@ -84,8 +84,26 @@ clone_zeroclaw() {
     log_success "Repository ready"
 }
 
+build_web_dashboard() {
+    log_info "Building web dashboard (cargo web build)..."
+
+    cd "$BUILD_DIR/zeroclaw"
+    if ! command -v npm &> /dev/null; then
+        log_error "npm is required to build the web dashboard"
+        exit 1
+    fi
+    cargo web build
+
+    if [[ ! -f "$BUILD_DIR/zeroclaw/web/dist/index.html" ]]; then
+        log_error "web/dist/index.html not found after cargo web build"
+        exit 1
+    fi
+
+    log_success "Web dashboard built"
+}
+
 build_zeroclaw() {
-    log_info "Building zeroclaw (this may take several minutes)..."
+    log_info "Building zeroclaw binary (this may take several minutes)..."
 
     cd "$BUILD_DIR/zeroclaw"
     cargo build --release --locked
@@ -108,6 +126,23 @@ copy_binary() {
     chmod +x "$BINARY_DEST"
 
     log_success "Binary copied to $BINARY_DEST"
+}
+
+copy_web_dist() {
+    log_info "Copying web dashboard to web/dist..."
+
+    WEB_SRC="$BUILD_DIR/zeroclaw/web/dist"
+    WEB_DEST="$REPO_DIR/web/dist"
+
+    if [[ ! -f "$WEB_SRC/index.html" ]]; then
+        log_error "Web dashboard not found at $WEB_SRC"
+        exit 1
+    fi
+
+    rm -rf "$WEB_DEST"
+    cp -a "$WEB_SRC" "$WEB_DEST"
+
+    log_success "Web dashboard copied to $WEB_DEST"
 }
 
 verify_binary() {
@@ -140,8 +175,10 @@ main() {
     check_rust
     install_dependencies
     clone_zeroclaw
+    build_web_dashboard
     build_zeroclaw
     copy_binary
+    copy_web_dist
     verify_binary
 
     echo

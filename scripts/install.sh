@@ -17,6 +17,8 @@ ZEROCLAW_HOME="/home/$ZEROCLAW_USER"
 ZEROCLAW_CONFIG_DIR="$ZEROCLAW_HOME/.zeroclaw"
 BINARY_SOURCE="$REPO_DIR/bin/zeroclaw"
 BINARY_DEST="/usr/local/bin/zeroclaw"
+WEB_DIST_SOURCE="$REPO_DIR/web/dist"
+WEB_DIST_DEST="/usr/share/zeroclaw/web/dist"
 SERVICE_FILE="$REPO_DIR/systemd/zeroclaw.service"
 SERVICE_DEST="/etc/systemd/system/zeroclaw.service"
 
@@ -89,6 +91,20 @@ install_binary() {
     log_info "Installing zeroclaw binary to $BINARY_DEST..."
     install -m 755 "$BINARY_SOURCE" "$BINARY_DEST"
     log_success "Binary installed"
+}
+
+install_web_dist() {
+    if [[ ! -f "$WEB_DIST_SOURCE/index.html" ]]; then
+        log_warning "Web dashboard not found at $WEB_DIST_SOURCE"
+        log_warning "Run ./scripts/build-zeroclaw.sh (or cargo web build in the zeroclaw repo) before installing"
+        return
+    fi
+
+    log_info "Installing web dashboard to $WEB_DIST_DEST..."
+    install -d -m 755 "$WEB_DIST_DEST"
+    cp -a "$WEB_DIST_SOURCE/." "$WEB_DIST_DEST/"
+    chmod -R a+rX "$WEB_DIST_DEST"
+    log_success "Web dashboard installed"
 }
 
 setup_config() {
@@ -189,6 +205,7 @@ main() {
     echo
     create_user
     install_binary
+    install_web_dist
     setup_config
     install_service
 
