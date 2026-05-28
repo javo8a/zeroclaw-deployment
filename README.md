@@ -192,6 +192,30 @@ sudo systemctl daemon-reload
 sudo systemctl restart zeroclaw
 ```
 
+### Web console not reachable from other machines
+
+The gateway defaults to `127.0.0.1:42617`. Edit `/home/zeroclaw/.zeroclaw/config.toml`:
+
+```toml
+[gateway]
+host = "0.0.0.0"
+port = 42617
+allow_public_bind = true
+```
+
+Then restart: `sudo systemctl restart zeroclaw`
+
+On Fedora, allow the port through the firewall:
+
+```bash
+sudo firewall-cmd --permanent --add-port=42617/tcp
+sudo firewall-cmd --reload
+```
+
+Open `http://<server-ip>:42617` from another device. Pairing is required by default — run `sudo -u zeroclaw zeroclaw gateway paircode` on the server if prompted.
+
+For access over the public internet, prefer a reverse proxy with TLS or a `[tunnel]` provider rather than exposing `42617` directly.
+
 ### Permission denied errors
 
 Ensure proper ownership:

@@ -57,13 +57,23 @@ default_provider = "anthropic"
 # access_token = "your-matrix-access-token"
 
 # ============================================================================
-# Web Dashboard Configuration
+# Gateway / Web Console (default port 42617)
 # ============================================================================
+# By default the gateway binds to 127.0.0.1 — only reachable on this machine.
+# To open the web console to other hosts on your LAN (or via port forward):
 
-# [web_dashboard]
-# enabled = true
-# host = "127.0.0.1"  # Bind to localhost only for security
-# port = 8080
+# [gateway]
+# host = "0.0.0.0"
+# port = 42617
+# allow_public_bind = true   # required when host is 0.0.0.0 or [::]
+#
+# Pairing is enabled by default (require_pairing = true). From another device,
+# open http://<server-ip>:42617 and complete pairing, or run on the server:
+#   zeroclaw gateway paircode
+#
+# For internet access without opening ports, use a tunnel instead:
+# [tunnel]
+# provider = "tailscale"   # or "cloudflare", "ngrok"
 
 # ============================================================================
 # Hardware Integration (Optional)
